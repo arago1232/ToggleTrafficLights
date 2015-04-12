@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using ColossalFramework;
 using ColossalFramework.Steamworks;
+using Craxy.CitiesSkylines.ToggleTrafficLights.Game.UI.Menu;
 using Craxy.CitiesSkylines.ToggleTrafficLights.Game.UI.StateMachine;
 using Craxy.CitiesSkylines.ToggleTrafficLights.Utils;
 using Craxy.CitiesSkylines.ToggleTrafficLights.Utils.Extensions;
@@ -72,21 +73,28 @@ namespace Craxy.CitiesSkylines.ToggleTrafficLights.Game
 
             Simulation.OnUpdate(realTimeDelta, simulationTimeDelta);
 
-//            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.P))
-//            {
-//                if (_ui == null)
-//                {
-//                    var toolControl = Singleton<ToolManager>.instance;
-//                    _ui = toolControl.gameObject.AddComponent<BatchUi>();
-//                }
-//                else
-//                {
-//                    _ui.enabled = !_ui.enabled;
-//                }
-//            }
+#if DEBUG
+            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.P))
+            {
+                if (_ui == null)
+                {
+                    _ui = new BatchPanel();
+                }
+                if (_ui.IsVisible)
+                {
+                    _ui.Hide();
+                }
+                else
+                {
+                    _ui.Show();
+                }
+            }
+#endif
         }
+#if DEBUG
+        private BatchPanel _ui = null;
+#endif
 
-//        private BatchUi _ui = null;
 
         #endregion
     }
