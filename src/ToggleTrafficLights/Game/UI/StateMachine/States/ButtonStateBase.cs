@@ -117,7 +117,7 @@ namespace Craxy.CitiesSkylines.ToggleTrafficLights.Game.UI.StateMachine.States
                 DebugLog.Info("State {0}: Initialize: ToolMode is null", State);
                 return false;
             }
-            if (!RoadsOptionPanel.gameObject.activeInHierarchy)
+            if (!BuiltinTabstrip.gameObject.activeInHierarchy)
             {
                 DebugLog.Info("State {0}: Initialize: ToolMode is not active in hierarchy", State);
                 return false;
@@ -227,7 +227,7 @@ namespace Craxy.CitiesSkylines.ToggleTrafficLights.Game.UI.StateMachine.States
 
             return btn;
         }
-        private static UITextureAtlas CreateAtlas(string file, string name, Material baseMaterial, int spriteWidth, int spriteHeight, string[] spriteNames)
+        public static UITextureAtlas CreateAtlas(string file, string name, Material baseMaterial, int spriteWidth, int spriteHeight, string[] spriteNames)
         {
             var tex = new Texture2D(spriteWidth * spriteNames.Length, spriteHeight, TextureFormat.ARGB32, false)
             {

@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
 using ColossalFramework;
 using ColossalFramework.Steamworks;
+using ColossalFramework.UI;
 using Craxy.CitiesSkylines.ToggleTrafficLights.Game.UI.StateMachine;
+using Craxy.CitiesSkylines.ToggleTrafficLights.Game.UI.StateMachine.States;
 using Craxy.CitiesSkylines.ToggleTrafficLights.Utils;
 using Craxy.CitiesSkylines.ToggleTrafficLights.Utils.Extensions;
 using ICities;
@@ -70,23 +73,115 @@ namespace Craxy.CitiesSkylines.ToggleTrafficLights.Game
         {
             base.OnUpdate(realTimeDelta, simulationTimeDelta);
 
-            Simulation.OnUpdate(realTimeDelta, simulationTimeDelta);
+//            Simulation.OnUpdate(realTimeDelta, simulationTimeDelta);
 
-//            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.P))
-//            {
-//                if (_ui == null)
-//                {
-//                    var toolControl = Singleton<ToolManager>.instance;
-//                    _ui = toolControl.gameObject.AddComponent<BatchUi>();
-//                }
-//                else
-//                {
-//                    _ui.enabled = !_ui.enabled;
-//                }
-//            }
+#if DEBUG
+            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.P))
+            {
+                if (_btn == null)
+                {
+                    var roadsOptionPanel = UiHelper.FindComponent<UIComponent>("RoadsOptionPanel(RoadsPanel)", null, UiHelper.FindOptions.NameContains);
+                    if (roadsOptionPanel == null || !roadsOptionPanel.gameObject.activeInHierarchy)
+                    {
+                        DebugLog.Info("RoadsOptionPanel not here");
+                        return;
+                    }
+
+                    const int spriteWidth = 31;
+                    const int spriteHeight = 31;
+
+                    _btn = roadsOptionPanel.AddUIComponent<UIMultiStateButton>();
+                    _btn.name = "MultiStateTrafficLightsButton";
+                    _btn.tooltip = "Some test button";
+                    _btn.size = new Vector2(spriteWidth, spriteHeight);
+
+
+                    var atlas =ButtonStateBase.CreateAtlas("icons.png", "ToggleTrafficLightsUI",
+                                    UIView.Find<UITabstrip>("ToolMode").atlas.material,
+                                    spriteWidth, spriteHeight, new[]
+                                                    {
+                                                        "OptionBase",
+                                                        "OptionBaseDisabled",
+                                                        "OptionBaseFocused",
+                                                        "OptionBaseHovered",
+                                                        "OptionBasePressed",
+                                                        "Selected",
+                                                        "Unselected",
+                                                        "OptionBaseFocusedRed",
+                                                    });
+                    _btn.atlas = atlas;
+                    _btn.playAudioEvents = true;
+                    _btn.relativePosition = new Vector3(131, 38);
+
+
+                    {
+                        var bss = _btn.backgroundSprites;
+                        bss.Clear();
+                        bss.AddState();
+
+                        var bs1 = bss[0];
+                        var bs2 = bss[1];
+
+                        bs1.normal = "OptionBase";
+                        bs1.disabled = "OptionBase";
+                        bs1.hovered = "OptionBaseHovered";
+                        bs1.pressed = "OptionBasePressed";
+                        bs1.focused = "OptionBase";
+
+                        bs2.normal = "OptionBaseFocused";
+                        bs2.disabled = "OptionBaseFocused";
+                        bs2.hovered = "OptionBaseFocused";
+                        bs2.pressed = "OptionBaseFocused";
+                        bs2.focused = "OptionBaseFocused";
+                    }
+
+
+                    {
+                        var fss = _btn.foregroundSprites;
+                        fss.Clear();
+                        fss.AddState();
+
+                        var fs1 = fss[0];
+                        var fs2 = fss[1];
+
+                        fs1.normal = "Unselected";
+                        fs1.disabled = "Unselected";
+                        fs1.hovered = "Unselected";
+                        fs1.pressed = "Unselected";
+                        fs1.focused = "Unselected";
+
+                        fs2.normal = "Selected";
+                        fs2.disabled = "Selected";
+                        fs2.hovered = "Selected";
+                        fs2.pressed = "Selected";
+                        fs2.focused = "Selected";
+                    }
+
+                    //This does not work -> Throws null reference error (GetForegroundRenderOffset)
+                    //BUT: when setting value via Mod Tools it suddenly works
+                    _btn.activeStateIndex = 0;
+
+                    _btn.eventClick += (component, param) =>
+                    {
+                        DebugLog.Info("Clicked. Active State Index: {0}", _btn.activeStateIndex);
+//                        if (_btn.activeStateIndex == 0)
+//                        {
+//                            _btn.activeStateIndex = 1;
+//                        }
+//                        else
+//                        {
+//                            _btn.activeStateIndex = 0;
+//                        }
+                    };
+                }
+            }
+#endif
         }
 
-//        private BatchUi _ui = null;
+
+#if DEBUG
+        private UIMultiStateButton _btn = null;
+#endif
 
         #endregion
     }
